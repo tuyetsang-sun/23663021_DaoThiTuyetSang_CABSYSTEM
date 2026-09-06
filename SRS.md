@@ -12,10 +12,22 @@
 | BG-07 | Khả năng mở rộng | Cho phép bổ sung dịch vụ và công nghệ mới |
 | BG-08 | Phân tích | Cung cấp dữ liệu phục vụ quản lý và ra quyết định |
 
+## 2. Business Stakeholders
 
-# 2. Business Requirements
+| Stakeholder | Vai trò | Mối quan tâm |
+|---|---|---|
+| Ban giám đốc | Chủ đầu tư | Doanh thu, hiệu quả, khả năng mở rộng |
+| Khách hàng | Người sử dụng dịch vụ | Đặt xe, theo dõi chuyến, thanh toán |
+| Tài xế | Người cung cấp dịch vụ | Nhận chuyến, thực hiện chuyến |
+| Nhân viên vận hành | Quản lý hoạt động | Theo dõi và xử lý chuyến |
+| Quản trị viên | Quản trị hệ thống | Người dùng, phân quyền, bảo mật |
+| Nhà cung cấp thanh toán | Đối tác bên ngoài | Xử lý giao dịch điện tử |
+| Nhà cung cấp thông báo | Đối tác bên ngoài | Gửi thông báo đến người dùng |
 
-## 2.1. Mục tiêu kinh doanh
+
+# 3. Business Requirements
+
+## 3.1. Mục tiêu kinh doanh
 
 Công ty ABC cần xây dựng hệ thống CAB System – nền tảng đặt xe trực tuyến nhằm thay thế và cải thiện hệ thống đặt xe hiện tại. Hệ thống mới phải hỗ trợ khách hàng, tài xế và nhân viên vận hành trong toàn bộ quy trình đặt và thực hiện chuyến đi.
 
@@ -32,7 +44,7 @@ Các mục tiêu kinh doanh chính:
 
 ---
 
-## 2.2. Các yêu cầu kinh doanh
+## 3.2. Các yêu cầu kinh doanh
 
 ### BR-01 – Tự động hóa đặt xe
 
