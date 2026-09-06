@@ -1,27 +1,101 @@
 
 ##1. Business Goals
 
-- Xây dựng nền tảng CAB System phục vụ đặt xe trực tuyến.
-- Tự động hóa quá trình tìm kiếm và phân công tài xế.
-- Nâng cao trải nghiệm và khả năng theo dõi chuyến đi của khách hàng.
-- Quản lý thanh toán và doanh thu tập trung.
-- Nâng cao hiệu quả quản lý và vận hành doanh nghiệp.
-- Đảm bảo hệ thống có khả năng mở rộng và phát triển lâu dài.
-- Đảm bảo an toàn, bảo mật thông tin và dữ liệu giao dịch.
-- Cho phép dễ dàng mở rộng dịch vụ, phương thức thanh toán và kênh thông báo.
+| ID | Business Goal | Mục tiêu |
+|---|---|---|
+| BG-01 | Tự động hóa | Giảm công việc phân công tài xế thủ công |
+| BG-02 | Trải nghiệm khách hàng | Giúp khách hàng đặt và theo dõi xe thuận tiện |
+| BG-03 | Hiệu quả vận hành | Giúp nhân viên quản lý chuyến và tài xế hiệu quả |
+| BG-04 | Tăng trưởng | Hỗ trợ số lượng lớn khách hàng và tài xế |
+| BG-05 | Doanh thu | Quản lý chính xác cước và doanh thu |
+| BG-06 | Bảo mật | Bảo vệ dữ liệu người dùng và giao dịch |
+| BG-07 | Khả năng mở rộng | Cho phép bổ sung dịch vụ và công nghệ mới |
+| BG-08 | Phân tích | Cung cấp dữ liệu phục vụ quản lý và ra quyết định |
 
-## 3. Module trọng tâm
 
-Đối với dự án CAB System, các module cốt lõi cần ưu tiên trong quá trình phân tích và phát triển là:
+# 2. Business Requirements
 
-1. **Đặt xe & Quản lý chuyến đi**
-2. **Tìm kiếm & Phân công tài xế**
-3. **Theo dõi vị trí & Trạng thái chuyến**
-4. **Tính cước & Thanh toán**
+## 2.1. Mục tiêu kinh doanh
 
-Các module này tạo thành quy trình nghiệp vụ chính:
+Công ty ABC cần xây dựng hệ thống CAB System – nền tảng đặt xe trực tuyến nhằm thay thế và cải thiện hệ thống đặt xe hiện tại. Hệ thống mới phải hỗ trợ khách hàng, tài xế và nhân viên vận hành trong toàn bộ quy trình đặt và thực hiện chuyến đi.
 
-**Khách hàng tạo yêu cầu → Hệ thống tìm tài xế → Phân công tài xế → Theo dõi chuyến → Hoàn thành chuyến → Tính cước → Thanh toán → Đánh giá.**
+Các mục tiêu kinh doanh chính:
+
+- Tự động hóa quy trình đặt xe và phân công tài xế.
+- Giảm sự phụ thuộc vào việc phân công tài xế thủ công.
+- Cải thiện trải nghiệm đặt xe và theo dõi chuyến đi của khách hàng.
+- Quản lý tập trung thông tin khách hàng, tài xế, phương tiện, chuyến đi và thanh toán.
+- Hỗ trợ doanh nghiệp quản lý hoạt động vận hành hiệu quả hơn.
+- Cung cấp dữ liệu và báo cáo phục vụ việc ra quyết định.
+- Đảm bảo hệ thống có khả năng phục vụ số lượng lớn khách hàng và tài xế.
+- Xây dựng nền tảng có khả năng mở rộng và bổ sung chức năng trong tương lai.
+
+---
+
+## 2.2. Các yêu cầu kinh doanh
+
+### BR-01 – Tự động hóa đặt xe
+
+Hệ thống phải hỗ trợ khách hàng thực hiện toàn bộ quy trình đặt xe trực tuyến mà không cần phụ thuộc vào tổng đài.
+
+**Kết quả mong muốn:**
+- Khách hàng có thể tạo yêu cầu đặt xe.
+- Hệ thống tiếp nhận và xử lý yêu cầu tự động.
+- Khách hàng có thể theo dõi trạng thái yêu cầu.
+
+---
+
+### BR-02 – Tự động tìm kiếm và phân công tài xế
+
+Hệ thống phải tự động tìm và phân công tài xế phù hợp cho mỗi yêu cầu đặt xe.
+
+**Kết quả mong muốn:**
+- Ưu tiên tài xế phù hợp và gần khách hàng.
+- Giảm thời gian tìm kiếm tài xế.
+- Tự động chuyển sang tài xế khác nếu tài xế được đề xuất từ chối hoặc không phản hồi.
+- Không yêu cầu khách hàng tạo lại yêu cầu khi việc phân công tài xế thất bại.
+
+---
+
+### BR-03 – Cải thiện khả năng theo dõi chuyến đi
+
+Hệ thống phải giúp khách hàng và nhân viên vận hành biết được trạng thái hiện tại của chuyến đi.
+
+**Kết quả mong muốn:**
+- Biết tài xế đã nhận chuyến hay chưa.
+- Biết thời gian dự kiến tài xế đến.
+- Theo dõi trạng thái chuyến.
+- Hỗ trợ theo dõi vị trí tài xế.
+- Nhân viên vận hành có thể theo dõi các chuyến đang diễn ra.
+
+---
+
+### BR-04 – Quản lý thanh toán tập trung
+
+Hệ thống phải quản lý thông tin cước và kết quả thanh toán của các chuyến đi trên một nền tảng thống nhất.
+
+**Kết quả mong muốn:**
+- Tính được số tiền khách hàng phải trả.
+- Hỗ trợ thanh toán tiền mặt.
+- Hỗ trợ thanh toán điện tử.
+- Tích hợp với nhà cung cấp thanh toán bên ngoài.
+- Không lưu trực tiếp thông tin nhạy cảm của thẻ hoặc tài khoản thanh toán.
+- Có khả năng xử lý lại giao dịch khi thanh toán thất bại theo chính sách doanh nghiệp.
+
+---
+
+### BR-05 – Cải thiện hệ thống thông báo
+
+Hệ thống phải cung cấp thông báo kịp thời cho khách hàng và tài xế trong các sự kiện quan trọng.
+
+**Kết quả mong muốn:**
+- Khách hàng nhận thông báo khi yêu cầu được tiếp nhận.
+- Khách hàng nhận thông báo khi tài xế nhận chuyến.
+- Khách hàng nhận thông báo khi tài xế đến điểm đón.
+- Khách hàng nhận thông báo khi chuyến hoàn thành.
+- Khách hàng nhận thông báo kết quả thanh toán.
+- Tài xế nhận thông báo về chuyến mới và các thay đổi của chuyến.
+
 # Sơ đồ quy trình nghiệp vụ CAB System
 ```mermaid
 
