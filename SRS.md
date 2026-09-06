@@ -12,7 +12,18 @@
 # Sơ đồ quy trình nghiệp vụ CAB System
 
 ```mermaid
+## 3. Module trọng tâm
 
+Đối với dự án CAB System, các module cốt lõi cần ưu tiên trong quá trình phân tích và phát triển là:
+
+1. **Đặt xe & Quản lý chuyến đi**
+2. **Tìm kiếm & Phân công tài xế**
+3. **Theo dõi vị trí & Trạng thái chuyến**
+4. **Tính cước & Thanh toán**
+
+Các module này tạo thành quy trình nghiệp vụ chính:
+
+**Khách hàng tạo yêu cầu → Hệ thống tìm tài xế → Phân công tài xế → Theo dõi chuyến → Hoàn thành chuyến → Tính cước → Thanh toán → Đánh giá.**
 
 
 
