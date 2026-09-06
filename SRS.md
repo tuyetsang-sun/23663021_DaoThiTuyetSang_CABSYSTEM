@@ -1,6 +1,21 @@
+
+##1. Business Goals
+
+- Xây dựng nền tảng CAB System phục vụ đặt xe trực tuyến.
+- Tự động hóa quá trình tìm kiếm và phân công tài xế.
+- Nâng cao trải nghiệm và khả năng theo dõi chuyến đi của khách hàng.
+- Quản lý thanh toán và doanh thu tập trung.
+- Nâng cao hiệu quả quản lý và vận hành doanh nghiệp.
+- Đảm bảo hệ thống có khả năng mở rộng và phát triển lâu dài.
+- Đảm bảo an toàn, bảo mật thông tin và dữ liệu giao dịch.
+- Cho phép dễ dàng mở rộng dịch vụ, phương thức thanh toán và kênh thông báo.
 # Sơ đồ quy trình nghiệp vụ CAB System
 
 ```mermaid
+
+
+
+
 flowchart TD
 
     A([Bắt đầu]) --> B[Khách hàng đăng nhập]
