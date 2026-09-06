@@ -81,19 +81,25 @@ Hệ thống phải giúp khách hàng và nhân viên vận hành biết đư�
 - Nhân viên vận hành có thể theo dõi các chuyến đang diễn ra.
 
 ---
+### BR-04 – Quản lý phương thức và thanh toán
 
-### BR-04 – Quản lý thanh toán tập trung
+Hệ thống phải cho phép khách hàng lựa chọn phương thức thanh toán trước khi xác nhận đặt xe.
 
-Hệ thống phải quản lý thông tin cước và kết quả thanh toán của các chuyến đi trên một nền tảng thống nhất.
+**Phương thức thanh toán:**
+- Tiền mặt.
+- Thanh toán điện tử qua ngân hàng / nhà cung cấp thanh toán bên ngoài.
 
-**Kết quả mong muốn:**
-- Tính được số tiền khách hàng phải trả.
-- Hỗ trợ thanh toán tiền mặt.
-- Hỗ trợ thanh toán điện tử.
-- Tích hợp với nhà cung cấp thanh toán bên ngoài.
-- Không lưu trực tiếp thông tin nhạy cảm của thẻ hoặc tài khoản thanh toán.
-- Có khả năng xử lý lại giao dịch khi thanh toán thất bại theo chính sách doanh nghiệp.
+**Đối với thanh toán tiền mặt:**
+- Khách hàng chọn phương thức thanh toán tiền mặt khi đặt xe.
+- Khách hàng thanh toán sau khi chuyến đi hoàn thành.
+- Hệ thống ghi nhận số tiền cần thanh toán sau khi hoàn thành chuyến.
 
+**Đối với thanh toán điện tử:**
+- Đối với khách hàng lựa chọn thanh toán điện tử, khách hàng phải hoàn tất thanh toán trước khi yêu cầu đặt xe được tạo.
+- Sau khi thanh toán thành công, hệ thống ghi nhận giao dịch đã thanh toán.
+- Khi chuyến xe hoàn thành, hệ thống xác nhận cước thực tế của chuyến.
+- Do khách hàng đã thanh toán trước, số tiền còn phải thanh toán tại thời điểm hoàn thành chuyến là **0 VNĐ**.
+- Phương thức thanh toán được ghi nhận là **Thanh toán qua ngân hàng**.
 ---
 
 ### BR-05 – Cải thiện hệ thống thông báo
