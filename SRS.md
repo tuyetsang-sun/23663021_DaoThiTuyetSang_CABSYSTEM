@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS) - CAB System
 
-## 11. Stakeholder List & Roles (Danh sách & Vai trò Bên liên quan)
+## 1. Stakeholder List & Roles (Danh sách & Vai trò Bên liên quan)
 
 | STT | Stakeholder | Vai trò | Mối quan tâm / Trách nhiệm chính |
 |---|---|---|---|
@@ -167,8 +167,8 @@ Module quản lý thông tin cơ bản của Driver và Vehicle.
 * Hiển thị trạng thái:
 
   * Available.
-  * Unavailable.
-  * On Trip.
+  * Offline.
+  * Busy.
 
 Trong MVP, trạng thái Driver được sử dụng để xác định tài xế có thể được phân công hay không.
 
@@ -204,9 +204,11 @@ Trong MVP, trạng thái Driver được sử dụng để xác định tài x�
 ```text
 Pending
    ↓
-Assigned
+Searching Driver
    ↓
-Accepted
+Driver Assigned
+   ↓
+Driver Accepted
    ↓
 Arriving
    ↓
@@ -220,10 +222,9 @@ Completed
 Các trường hợp ngoại lệ:
 
 ```text
-Assigned → Rejected
+Driver Assigned → Rejected
 Pending → Cancelled
-Assigned → Cancelled
-In Progress → Incident
+Driver Assigned → Cancelled
 ```
 
 ---
@@ -1332,7 +1333,7 @@ Hệ thống phải lưu tối thiểu:
 
 ---
 
-# 7.4. MVP-04 – Điều phối & Quản lý Chuyến
+## 7.4. MVP-04 – Điều phối & Quản lý Chuyến
 
 > **Đây là module trọng tâm của CAB System MVP.**
 
@@ -1461,7 +1462,7 @@ Hệ thống phải:
 
 ---
 
-# 7.6. MVP-05 – Tính cước & Thanh toán
+## 7.6. MVP-05 – Tính cước & Thanh toán
 
 ### FR-14 – Tính cước
 
@@ -1517,7 +1518,7 @@ Hệ thống phải:
 
 ---
 
-# 7.7. Chức năng Thông báo
+## 7.7. Chức năng Thông báo
 
 Thông báo được tích hợp vào các module liên quan thay vì xây dựng thành một module riêng.
 
@@ -1543,7 +1544,7 @@ SMS, Email và Push Notification thuộc **Future Scope**.
 
 ---
 
-# 7.8. MVP-06 – Theo dõi & Báo cáo
+## 7.8. MVP-06 – Theo dõi & Báo cáo
 
 ### FR-18 – Quản lý vận hành
 
@@ -1589,7 +1590,7 @@ Báo cáo có thể được lọc theo khoảng thời gian.
 
 ---
 
-# 7.9. Phân quyền Functional Requirements
+## 7.9. Phân quyền Functional Requirements
 
 | Role             | Quyền chính                                          |
 | ---------------- | ---------------------------------------------------- |
@@ -1614,7 +1615,7 @@ Hệ thống phải:
 
 ---
 
-# 7.10. FR trọng tâm của dự án
+## 7.10. FR trọng tâm của dự án
 
 Do dự án được thực hiện bởi **một người trong 7 tuần**, Functional Requirements được phân thành ba nhóm:
 
@@ -1646,7 +1647,7 @@ FR-15/FR-16 Thanh toán
 
 ---
 
-# 7.11. Mapping Business Requirements → Functional Requirements
+## 7.11. Mapping Business Requirements → Functional Requirements
 
 | Business Requirement               | Functional Requirements    |
 | ---------------------------------- | -------------------------- |
@@ -1665,7 +1666,7 @@ FR-15/FR-16 Thanh toán
 
 ---
 
-# 7.12. Ma trận Functional Requirements theo Module
+## 7.12. Ma trận Functional Requirements theo Module
 
 | Module                                | Functional Requirements | Priority     |
 | ------------------------------------- | ----------------------- | ------------ |
@@ -2804,7 +2805,7 @@ Ma trận truy vết chính của CAB System liên kết:
 | Acceptance Criteria         |     58* |           58* | **100%** |
 | Non-Functional Requirements |      23 |            23 | **100%** |
 
-* Số lượng Acceptance Criteria cần được thống nhất với Section 12. Nếu Section 12 được rút gọn xuống khoảng 35–40 AC để phù hợp dự án cá nhân 7 tuần, bảng Coverage này cũng phải cập nhật lại theo số lượng thực tế.
+* Tổng số 58 Acceptance Criteria (AC01–AC58) đã khớp với danh sách chi tiết tại Section 12.
 
 ---
 
