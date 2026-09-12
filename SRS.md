@@ -39,8 +39,6 @@ quadrantChart
 
 Các mục tiêu kinh doanh của **CAB System** tập trung vào việc số hóa quy trình đặt xe, hỗ trợ điều phối tài xế, nâng cao trải nghiệm khách hàng và giúp nhân viên vận hành quản lý chuyến xe hiệu quả.
 
-Do đây là **dự án cá nhân được thực hiện trong 7 tuần**, các mục tiêu được giới hạn ở những nhu cầu cốt lõi cần thiết cho phiên bản **MVP (Minimum Viable Product)**. Các chức năng nâng cao như định tuyến GPS thời gian thực, định giá động hoặc tự động điều phối bằng AI không thuộc phạm vi của dự án.
-
 | ID    | Business Goal                       | Mục tiêu                                                                                                          |
 | ----- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | BG-01 | **Tự động hóa đặt xe**              | Cho phép khách hàng tạo yêu cầu đặt xe nhanh chóng và giảm sự phụ thuộc vào quy trình đặt xe thủ công.            |
@@ -50,21 +48,11 @@ Do đây là **dự án cá nhân được thực hiện trong 7 tuần**, các 
 | BG-05 | **Quản lý thanh toán**              | Quản lý cước phí và trạng thái thanh toán của chuyến xe một cách tập trung.                                       |
 | BG-06 | **Hỗ trợ quản lý và báo cáo**       | Cung cấp các báo cáo cơ bản về số lượng chuyến, trạng thái chuyến và doanh thu để hỗ trợ theo dõi hoạt động.      |
 
-### 3.1. Business Goals Prioritization
-
-Các Business Goal được ưu tiên dựa trên mức độ ảnh hưởng đến quy trình nghiệp vụ cốt lõi và khả năng thực hiện trong thời gian 7 tuần.
-
-| Priority   | Business Goals             | Mô tả                                                                                    |
-| ---------- | -------------------------- | ---------------------------------------------------------------------------------------- |
-| **High**   | BG-01, BG-02, BG-03, BG-04 | Các mục tiêu cốt lõi, trực tiếp phục vụ quy trình đặt, điều phối và thực hiện chuyến xe. |
-| **Medium** | BG-05, BG-06               | Các mục tiêu hỗ trợ thanh toán và cung cấp thông tin quản lý.                            |
-
-### 3.2. Business Goal Summary
+### 3.1. Business Goal Summary
 
 ```mermaid
 flowchart LR
     A["CAB System"]
-
     A --> B["BG-01<br/>Tự động hóa đặt xe"]
     A --> C["BG-02<br/>Trải nghiệm khách hàng"]
     A --> D["BG-03<br/>Hiệu quả vận hành"]
@@ -73,7 +61,7 @@ flowchart LR
     A --> G["BG-06<br/>Quản lý & Báo cáo"]
 ```
 
-### 3.3. Business Goal Success Indicators
+### 3.2. Business Goal Success Indicators
 
 Để đánh giá mức độ đáp ứng các mục tiêu kinh doanh, hệ thống có thể sử dụng một số chỉ số cơ bản:
 
@@ -86,17 +74,11 @@ flowchart LR
 | BG-05         | Payment được ghi nhận với trạng thái rõ ràng       |
 | BG-06         | Management có thể xem các chỉ số vận hành cơ bản   |
 
-> **Lưu ý về phạm vi:** Các chỉ số trên được sử dụng chủ yếu để đánh giá khả năng đáp ứng của MVP, không đặt mục tiêu đo lường hiệu quả kinh doanh thực tế của một doanh nghiệp vận tải.
-
 ## 4. Minimum Viable Product (MVP) Modules (Các Module của Sản phẩm Khả dụng Tối thiểu)
-
-Với thời gian thực hiện **7 tuần** và chỉ có **1 thành viên**, phạm vi MVP của CAB System được giới hạn vào các chức năng cốt lõi của quy trình đặt và điều phối xe.
 
 Mục tiêu của MVP là xây dựng được quy trình nghiệp vụ chính:
 
 **Đặt xe → Tìm tài xế → Phân công → Thực hiện chuyến → Hoàn thành → Tính cước → Thanh toán → Lưu lịch sử**
-
-Các chức năng nâng cao như GPS thời gian thực, tích hợp bản đồ, thanh toán điện tử thực tế, SMS/Email/Push Notification và thuật toán điều phối nâng cao được đưa vào **Future Scope**.
 
 ### 4.1. Danh sách các Module MVP
 
@@ -108,8 +90,6 @@ Các chức năng nâng cao như GPS thời gian thực, tích hợp bản đồ
 | MVP-04 | **Điều phối & Quản lý chuyến** | Phân công tài xế và quản lý trạng thái chuyến                             | **Rất cao** |
 | MVP-05 | **Tính cước & Thanh toán**     | Tính cước và ghi nhận trạng thái thanh toán                               | Cao         |
 | MVP-06 | **Theo dõi & Báo cáo**         | Theo dõi chuyến và cung cấp báo cáo cơ bản                                | Trung bình  |
-
-> **Module trọng tâm của dự án: MVP-04 - Điều phối & Quản lý chuyến.**
 
 ---
 
@@ -172,8 +152,6 @@ Module quản lý thông tin cơ bản của Driver và Vehicle.
 
 Trong MVP, trạng thái Driver được sử dụng để xác định tài xế có thể được phân công hay không.
 
-> **Giới hạn MVP:** Không triển khai GPS hoặc bản đồ thời gian thực. Vị trí tài xế chỉ được lưu dưới dạng thông tin phục vụ mô phỏng nghiệp vụ điều phối.
-
 ---
 
 #### 4.2.4. MVP-04: Điều phối & Quản lý chuyến
@@ -198,34 +176,6 @@ Trong MVP, trạng thái Driver được sử dụng để xác định tài x�
 * Lưu lịch sử thay đổi trạng thái.
 * Cho phép Customer xem trạng thái chuyến.
 * Cho phép Operation Staff theo dõi các chuyến đang hoạt động.
-
-**Trạng thái Trip trong MVP:**
-
-```text
-Pending
-   ↓
-Searching Driver
-   ↓
-Driver Assigned
-   ↓
-Driver Accepted
-   ↓
-Arriving
-   ↓
-Picked Up
-   ↓
-In Progress
-   ↓
-Completed
-```
-
-Các trường hợp ngoại lệ:
-
-```text
-Driver Assigned → Rejected
-Pending → Cancelled
-Driver Assigned → Cancelled
-```
 
 ---
 
@@ -258,8 +208,6 @@ Paid           Failed
                  ↓
              Processing
 ```
-
-> **Giới hạn MVP:** Thanh toán điện tử chỉ được mô phỏng. Không yêu cầu tích hợp cổng thanh toán thực tế.
 
 ---
 
@@ -307,8 +255,6 @@ Các thông báo cơ bản được tích hợp trực tiếp vào các module l
 | Tài xế cập nhật trạng thái     | Customer   |
 | Chuyến hoàn thành              | Customer   |
 | Thanh toán thành công/thất bại | Customer   |
-
-> Trong MVP, thông báo chỉ được hiển thị trực tiếp trên giao diện hệ thống. SMS, Email và Push Notification thuộc **Future Scope**.
 
 ---
 
@@ -374,66 +320,9 @@ flowchart TD
 
 ---
 
-### 4.5. Phạm vi Module trọng tâm
-
-Trong dự án cá nhân 7 tuần, **MVP-04 - Điều phối & Quản lý chuyến** được ưu tiên phân tích và triển khai sâu nhất.
-
-Nghiệp vụ trọng tâm:
-
-```text
-Booking
-   ↓
-Tìm Driver
-   ↓
-Phân công
-   ↓
-Nhận / Từ chối
-   ↓
-Thực hiện Trip
-   ↓
-Cập nhật trạng thái
-   ↓
-Completed
-```
-
-Module này sẽ được sử dụng để xây dựng các artefact BA chính:
-
-* Business Requirements.
-* Functional Requirements.
-* Business Rules.
-* Use Case.
-* Use Case Specification.
-* Activity Diagram.
-* Sequence Diagram.
-* Acceptance Criteria.
-* Traceability Matrix.
-
-Các module còn lại được phân tích ở mức cần thiết để hỗ trợ nghiệp vụ của module trọng tâm.
-
----
-
-### 4.6. Future Scope
-
-Các chức năng sau không thuộc MVP và có thể được xem xét trong các phiên bản tiếp theo:
-
-| ID    | Future Feature           | Mô tả                                             |
-| ----- | ------------------------ | ------------------------------------------------- |
-| FS-01 | **GPS Real-time**        | Theo dõi vị trí tài xế theo thời gian thực        |
-| FS-02 | **Map Integration**      | Tích hợp dịch vụ bản đồ                           |
-| FS-03 | **Online Payment**       | Tích hợp cổng thanh toán thực tế                  |
-| FS-04 | **Notification Service** | Gửi SMS, Email và Push Notification               |
-| FS-05 | **Smart Dispatch**       | Tự động điều phối tài xế bằng thuật toán nâng cao |
-| FS-06 | **Dynamic Pricing**      | Tính giá linh hoạt theo nhu cầu                   |
-| FS-07 | **Promotion**            | Mã giảm giá và chương trình khuyến mãi            |
-| FS-08 | **Driver Rating**        | Đánh giá và xếp hạng tài xế                       |
-
-> Các chức năng trong Future Scope không được sử dụng làm cơ sở để đánh giá phạm vi hoàn thành của MVP trong dự án 7 tuần.
-
 # 5. Business Requirements – CAB System MVP (Yêu cầu nghiệp vụ)
 
 Các Business Requirements (BR) được xây dựng dựa trên **Business Goals** và phạm vi **MVP** đã xác định.
-
-Do đây là dự án cá nhân thực hiện trong **7 tuần**, các yêu cầu được giới hạn ở mức đủ để mô phỏng và kiểm chứng quy trình cốt lõi của CAB System, tập trung vào **đặt xe – điều phối tài xế – quản lý chuyến – thanh toán**.
 
 ## 5.1. Quy trình nghiệp vụ chính
 
@@ -657,8 +546,6 @@ Hệ thống phải hiển thị thông báo trên giao diện khi xảy ra các
 
 **Giới hạn MVP:** Chỉ sử dụng thông báo trực tiếp trên giao diện.
 
-SMS, Email và Push Notification thuộc **Future Scope**.
-
 ---
 
 ### BR-10. Quản lý vận hành
@@ -762,43 +649,11 @@ flowchart TD
 
 ---
 
-## 5.5. Ưu tiên Business Requirements
-
-Để đảm bảo khả năng hoàn thành trong 7 tuần, các yêu cầu được phân loại:
-
-| Mức độ       | Business Requirements                           | Ý nghĩa                                  |
-| ------------ | ----------------------------------------------- | ---------------------------------------- |
-| **Critical** | BR-04, BR-05, BR-06                             | Quy trình cốt lõi của MVP-04             |
-| **High**     | BR-01, BR-02, BR-03, BR-07, BR-08, BR-11, BR-12 | Chức năng bắt buộc để hệ thống hoạt động |
-| **Medium**   | BR-09, BR-10                                    | Hỗ trợ vận hành và trải nghiệm           |
-
-### Trọng tâm phân tích
-
-**BR-04 → BR-05 → BR-06** là nhóm yêu cầu trọng tâm của dự án vì trực tiếp liên quan đến **MVP-04 – Dispatch & Trip Management**.
-
-```text
-BR-03
-  ↓
-BR-04 Tìm Driver
-  ↓
-BR-05 Phân công Driver
-  ↓
-BR-06 Quản lý Trip
-  ↓
-BR-07 Tính cước
-  ↓
-BR-08 Thanh toán
-  ↓
-BR-11 Lưu lịch sử
-```
-
-Các chức năng như **GPS thời gian thực, bản đồ, thanh toán online thực tế, Dynamic Pricing, thuật toán điều phối thông minh và hệ thống thông báo SMS/Email/Push** không thuộc phạm vi triển khai của MVP 7 tuần.
-
 # 6. Business Process Modeling (Mô hình hóa Quy trình Nghiệp vụ)
 
 Business Process Modeling được sử dụng để mô tả cách **CAB System MVP** xử lý một yêu cầu đặt xe từ khi Customer tạo yêu cầu đến khi chuyến đi hoàn thành, thanh toán và lưu lịch sử.
 
-Do đây là dự án cá nhân thực hiện trong **7 tuần**, quy trình được tập trung vào luồng nghiệp vụ cốt lõi:
+Quy trình được tập trung vào luồng nghiệp vụ cốt lõi:
 
 ```text
 Đặt xe
@@ -1042,10 +897,6 @@ Thông báo được sử dụng để cung cấp thông tin cho Customer và Dr
 | 7   | Thanh toán thất bại     | Customer   |
 | 8   | Không có Driver phù hợp | Customer   |
 
-**Giới hạn MVP:** thông báo chỉ được hiển thị trong giao diện hệ thống.
-
-SMS, Email và Push Notification thuộc **Future Scope**.
-
 ---
 
 ## 6.7. Quy trình xử lý ngoại lệ
@@ -1067,8 +918,6 @@ CAB System MVP tập trung xử lý các ngoại lệ trực tiếp ảnh hưở
 * Không cho phép thực hiện thao tác trái với trạng thái hiện tại.
 * Lỗi thanh toán không làm mất thông tin Trip.
 * Operation Staff có thể kiểm tra và hỗ trợ các trường hợp bất thường.
-
-> Các tình huống hạ tầng phức tạp như server failure, network recovery hoặc distributed transaction không thuộc phạm vi phân tích chi tiết của MVP 7 tuần.
 
 ---
 
@@ -1137,7 +986,7 @@ flowchart TD
 
 ### Quy trình trọng tâm
 
-Đối với dự án cá nhân 7 tuần, quy trình cần được phân tích sâu nhất là:
+Quy trình cần được phân tích sâu nhất là:
 
 ```text
 Booking
@@ -1159,7 +1008,7 @@ Completed
 
 ## 6.10. Giới hạn triển khai
 
-Để đảm bảo khả năng hoàn thành dự án trong 7 tuần, CAB System MVP **không bắt buộc** triển khai:
+CAB System MVP **không bắt buộc** triển khai:
 
 * GPS thời gian thực.
 * Bản đồ thời gian thực.
@@ -1206,7 +1055,7 @@ Trong đó, **Dispatch & Trip Management** là quy trình trung tâm và là tr�
 
 Functional Requirements (FR) mô tả các chức năng mà **CAB System MVP** phải cung cấp nhằm đáp ứng các Business Requirements (BR) đã xác định.
 
-Do đây là **dự án cá nhân thực hiện trong 7 tuần**, Functional Requirements được giới hạn ở mức cần thiết để hoàn thành quy trình nghiệp vụ chính:
+Functional Requirements được giới hạn ở mức cần thiết để hoàn thành quy trình nghiệp vụ chính:
 
 ```text
 Quản lý tài khoản
@@ -1683,7 +1532,7 @@ FR-15/FR-16 Thanh toán
 
 # 8. Business Rules (Quy tắc Nghiệp vụ)
 
-Business Rules xác định các quy tắc mà hệ thống phải tuân thủ trong quá trình quản lý tài khoản, đặt xe, phân công tài xế, thực hiện chuyến đi và thanh toán. Các quy tắc được giới hạn trong phạm vi MVP để phù hợp với dự án cá nhân 7 tuần.
+Business Rules xác định các quy tắc mà hệ thống phải tuân thủ trong quá trình quản lý tài khoản, đặt xe, phân công tài xế, thực hiện chuyến đi và thanh toán. Các quy tắc được giới hạn trong phạm vi MVP để phù hợp với dự án cá nhân
 
 ## 8.1. Quy tắc Quản lý Tài khoản
 
