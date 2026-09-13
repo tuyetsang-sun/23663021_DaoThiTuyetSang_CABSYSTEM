@@ -1,0 +1,491 @@
+paths:
+
+  /trips:
+    get:
+      tags:
+        - Trip
+      summary: Danh sách Trip
+      description: |
+        Operation Staff xem danh sách Trip.
+        Có thể lọc theo trạng thái và khoảng thời gian.
+      operationId: getTrips
+
+      parameters:
+
+        - name: status
+          in: query
+          required: false
+          description: Lọc Trip theo trạng thái
+          schema:
+            type: string
+            enum:
+              - Pending
+              - Searching Driver
+              - Driver Assigned
+              - Driver Accepted
+              - Arriving
+              - Picked Up
+              - In Progress
+              - Completed
+              - Cancelled
+              - Failed
+          example: In Progress
+
+        - name: fromDate
+          in: query
+          required: false
+          description: Ngày bắt đầu
+          schema:
+            type: string
+            format: date
+          example: "2026-09-01"
+
+        - name: toDate
+          in: query
+          required: false
+          description: Ngày kết thúc
+          schema:
+            type: string
+            format: date
+          example: "2026-09-13"
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Lấy danh sách Trip thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripListResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem danh sách Trip
+
+
+  /trips/{tripId}:
+    get:
+      tags:
+        - Trip
+      summary: Xem thông tin Trip
+      description: |
+        Customer xem thông tin chuyến của mình.
+        Operation Staff có thể xem thông tin Trip trong quá trình vận hành.
+
+        Thông tin bao gồm:
+        - Trip ID
+        - Điểm đón
+        - Điểm đến
+        - Loại xe
+        - Driver
+        - Vehicle
+        - Trạng thái
+        - Fare nếu Trip đã hoàn thành
+      operationId: getTrip
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Lấy thông tin Trip thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem Trip này
+
+        '404':
+          description: Không tìm thấy Trip
+
+
+  /trips/{tripId}/status:
+    get:
+      tags:
+        - Trip
+      summary: Xem trạng thái Trip
+      description: Xem trạng thái hiện tại của Trip.
+      operationId: getTripStatus
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Lấy trạng thái Trip thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripStatusResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem trạng thái Trip
+
+        '404':
+          description: Không tìm thấy Trip
+
+
+    patch:
+      tags:
+        - Trip
+      summary: Cập nhật trạng thái Trip
+      description: |
+        Chỉ Driver được phân công cho Trip mới được cập nhật
+        trạng thái thực hiện chuyến.
+
+        Trạng thái phải tuân theo thứ tự hợp lệ:
+
+        Pending
+        → Searching Driver
+        → Driver Assigned
+        → Driver Accepted
+        → Arriving
+        → Picked Up
+        → In Progress
+        → Completed
+
+        Không được phép chuyển Completed về trạng thái trước đó.
+      operationId: updateTripStatus
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTripStatusRequest'
+
+      responses:
+
+        '200':
+          description: Cập nhật trạng thái Trip thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripStatusResponse'
+
+        '400':
+          description: Chuyển trạng thái không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Driver không được phân công cho Trip này
+
+        '404':
+          description: Không tìm thấy Trip
+
+        '409':
+          description: Trip đã hoàn thành và không thể thay đổi trạng thái
+
+
+  /trips/{tripId}/complete:
+    post:
+      tags:
+        - Trip
+      summary: Hoàn thành Trip
+      description: |
+        Driver xác nhận hoàn thành chuyến.
+
+        Hệ thống kiểm tra Trip đang ở trạng thái In Progress
+        trước khi chuyển sang Completed.
+
+        Sau khi hoàn thành:
+        - Lưu thời gian hoàn thành.
+        - Driver được chuyển về Available.
+        - Kích hoạt quá trình tính cước.
+      operationId: completeTrip
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Hoàn thành Trip thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteTripResponse'
+
+        '400':
+          description: Trip chưa ở trạng thái In Progress
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Chỉ Driver được phân công mới có thể hoàn thành Trip
+
+        '404':
+          description: Không tìm thấy Trip
+
+        '409':
+          description: Trip đã hoàn thành trước đó
+
+
+components:
+
+  schemas:
+
+    TripResponse:
+      type: object
+      properties:
+
+        tripId:
+          type: integer
+          example: 6001
+
+        bookingId:
+          type: integer
+          example: 5001
+
+        customerId:
+          type: integer
+          example: 1001
+
+        pickupLocation:
+          type: string
+          example: 12 Nguyễn Huệ, Quận 1, TP.HCM
+
+        destination:
+          type: string
+          example: Sân bay Tân Sơn Nhất
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        status:
+          type: string
+          enum:
+            - Pending
+            - Searching Driver
+            - Driver Assigned
+            - Driver Accepted
+            - Arriving
+            - Picked Up
+            - In Progress
+            - Completed
+            - Cancelled
+            - Failed
+          example: In Progress
+
+        driver:
+          $ref: '#/components/schemas/TripDriver'
+
+        vehicle:
+          $ref: '#/components/schemas/TripVehicle'
+
+        fare:
+          type: number
+          format: double
+          nullable: true
+          example: 150000
+
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T10:30:00Z"
+
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+
+
+    TripStatusResponse:
+      type: object
+      properties:
+
+        tripId:
+          type: integer
+          example: 6001
+
+        status:
+          type: string
+          enum:
+            - Pending
+            - Searching Driver
+            - Driver Assigned
+            - Driver Accepted
+            - Arriving
+            - Picked Up
+            - In Progress
+            - Completed
+            - Cancelled
+            - Failed
+          example: In Progress
+
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T11:00:00Z"
+
+
+    UpdateTripStatusRequest:
+      type: object
+      required:
+        - status
+
+      properties:
+
+        status:
+          type: string
+          enum:
+            - Arriving
+            - Picked Up
+            - In Progress
+          example: Arriving
+
+        note:
+          type: string
+          nullable: true
+          example: Driver đang trên đường đến điểm đón
+
+
+    CompleteTripResponse:
+      type: object
+      properties:
+
+        tripId:
+          type: integer
+          example: 6001
+
+        status:
+          type: string
+          enum:
+            - Completed
+          example: Completed
+
+        completedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T11:45:00Z"
+
+        driverStatus:
+          type: string
+          enum:
+            - Available
+          example: Available
+
+        fareCalculation:
+          type: string
+          example: Triggered
+
+
+    TripDriver:
+      type: object
+      nullable: true
+      properties:
+
+        driverId:
+          type: integer
+          example: 2001
+
+        fullName:
+          type: string
+          example: Trần Văn B
+
+        phone:
+          type: string
+          example: "0909876543"
+
+
+    TripVehicle:
+      type: object
+      nullable: true
+      properties:
+
+        vehicleId:
+          type: integer
+          example: 3001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: "51A-123.45"
+
+
+    TripListResponse:
+      type: object
+      properties:
+
+        total:
+          type: integer
+          example: 20
+
+        trips:
+          type: array
+          items:
+            $ref: '#/components/schemas/TripResponse'
+
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
