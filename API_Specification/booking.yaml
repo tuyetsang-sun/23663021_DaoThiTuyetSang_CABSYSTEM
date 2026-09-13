@@ -1,0 +1,357 @@
+paths:
+
+  /bookings:
+    post:
+      tags:
+        - Booking
+      summary: Tạo yêu cầu đặt xe
+      description: |
+        Customer tạo một yêu cầu đặt xe mới.
+        Yêu cầu phải có điểm đón, điểm đến và loại xe.
+        Sau khi tạo thành công, Booking/Trip được tạo với trạng thái Pending.
+      operationId: createBooking
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+
+      responses:
+        '201':
+          description: Tạo yêu cầu đặt xe thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+
+        '400':
+          description: Dữ liệu đặt xe không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Người dùng không có quyền tạo yêu cầu đặt xe
+
+
+  /bookings/{bookingId}:
+    get:
+      tags:
+        - Booking
+      summary: Xem thông tin yêu cầu đặt xe
+      description: |
+        Customer xem thông tin Booking bao gồm điểm đón,
+        điểm đến, loại xe, trạng thái và Driver được phân công.
+      operationId: getBooking
+
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          description: ID của Booking
+          schema:
+            type: integer
+          example: 5001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy thông tin Booking thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem Booking này
+
+        '404':
+          description: Không tìm thấy Booking
+
+
+    delete:
+      tags:
+        - Booking
+      summary: Hủy yêu cầu đặt xe
+      description: |
+        Customer có thể hủy yêu cầu đặt xe nếu trạng thái hiện tại
+        cho phép hủy.
+        Booking đã Completed không được phép hủy.
+        Hệ thống lưu trạng thái và lý do hủy.
+      operationId: cancelBooking
+
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          description: ID của Booking
+          schema:
+            type: integer
+          example: 5001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelBookingRequest'
+
+      responses:
+        '200':
+          description: Hủy Booking thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelBookingResponse'
+
+        '400':
+          description: Booking không ở trạng thái cho phép hủy
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền hủy Booking này
+
+        '404':
+          description: Không tìm thấy Booking
+
+
+  /bookings/{bookingId}/status:
+    get:
+      tags:
+        - Booking
+      summary: Xem trạng thái Booking
+      description: |
+        Trả về trạng thái hiện tại của Booking và thông tin
+        Driver nếu đã được phân công.
+      operationId: getBookingStatus
+
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          description: ID của Booking
+          schema:
+            type: integer
+          example: 5001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy trạng thái Booking thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingStatusResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem Booking này
+
+        '404':
+          description: Không tìm thấy Booking
+
+
+components:
+
+  schemas:
+
+    CreateBookingRequest:
+      type: object
+      required:
+        - pickupLocation
+        - destination
+        - vehicleType
+
+      properties:
+
+        pickupLocation:
+          type: string
+          minLength: 1
+          example: 12 Nguyễn Huệ, Quận 1, TP.HCM
+          description: Địa điểm đón khách
+
+        destination:
+          type: string
+          minLength: 1
+          example: Sân bay Tân Sơn Nhất
+          description: Địa điểm đến
+
+        vehicleType:
+          type: string
+          minLength: 1
+          example: Sedan
+          description: Loại xe khách yêu cầu
+
+
+    BookingResponse:
+      type: object
+      properties:
+
+        bookingId:
+          type: integer
+          example: 5001
+
+        tripId:
+          type: integer
+          example: 6001
+
+        customerId:
+          type: integer
+          example: 1001
+
+        pickupLocation:
+          type: string
+          example: 12 Nguyễn Huệ, Quận 1, TP.HCM
+
+        destination:
+          type: string
+          example: Sân bay Tân Sơn Nhất
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        status:
+          type: string
+          enum:
+            - Pending
+            - Searching Driver
+            - Driver Assigned
+            - Driver Accepted
+            - Arriving
+            - Picked Up
+            - In Progress
+            - Completed
+            - Cancelled
+            - Failed
+          example: Pending
+
+        driver:
+          $ref: '#/components/schemas/AssignedDriver'
+
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T10:30:00Z"
+
+
+    BookingStatusResponse:
+      type: object
+      properties:
+
+        bookingId:
+          type: integer
+          example: 5001
+
+        tripId:
+          type: integer
+          example: 6001
+
+        status:
+          type: string
+          enum:
+            - Pending
+            - Searching Driver
+            - Driver Assigned
+            - Driver Accepted
+            - Arriving
+            - Picked Up
+            - In Progress
+            - Completed
+            - Cancelled
+            - Failed
+          example: Driver Assigned
+
+        driver:
+          $ref: '#/components/schemas/AssignedDriver'
+
+
+    AssignedDriver:
+      type: object
+      nullable: true
+      properties:
+
+        driverId:
+          type: integer
+          example: 2001
+
+        fullName:
+          type: string
+          example: Trần Văn B
+
+        phone:
+          type: string
+          example: "0909876543"
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: "51A-123.45"
+
+
+    CancelBookingRequest:
+      type: object
+      required:
+        - reason
+
+      properties:
+
+        reason:
+          type: string
+          minLength: 1
+          example: Khách hàng thay đổi lịch trình
+          description: Lý do hủy Booking
+
+
+    CancelBookingResponse:
+      type: object
+      properties:
+
+        bookingId:
+          type: integer
+          example: 5001
+
+        status:
+          type: string
+          enum:
+            - Cancelled
+          example: Cancelled
+
+        cancelReason:
+          type: string
+          example: Khách hàng thay đổi lịch trình
+
+        cancelledAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T11:00:00Z"
+
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
