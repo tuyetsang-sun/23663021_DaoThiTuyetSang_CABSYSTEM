@@ -1,0 +1,820 @@
+paths:
+
+  /operation/trips:
+    get:
+      tags:
+        - Operation
+      summary: Xem danh sách chuyến xe
+      description: |
+        Operation Staff xem danh sách các chuyến xe để theo dõi và điều phối.
+
+        Có thể lọc theo:
+        - Trạng thái chuyến
+        - Ngày
+        - Tài xế
+        - Loại xe
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Pending
+              - Searching Driver
+              - Driver Assigned
+              - Driver Accepted
+              - Arriving
+              - Picked Up
+              - In Progress
+              - Completed
+              - Cancelled
+              - Failed
+
+        - name: driverId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Lọc theo tài xế
+
+        - name: vehicleType
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Lọc theo loại xe
+
+        - name: fromDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+
+        - name: toDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+
+      responses:
+        '200':
+          description: Lấy danh sách chuyến xe thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationTripListResponse'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Không có quyền Operation Staff
+
+
+  /operation/trips/{tripId}:
+    get:
+      tags:
+        - Operation
+      summary: Xem chi tiết chuyến xe
+      description: |
+        Operation Staff xem thông tin chi tiết của một chuyến xe,
+        bao gồm khách hàng, tài xế, xe, trạng thái và thông tin thanh toán.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID chuyến xe
+
+      responses:
+        '200':
+          description: Lấy thông tin chuyến xe thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationTripDetail'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Không có quyền truy cập
+
+        '404':
+          description: Không tìm thấy chuyến xe
+
+
+  /operation/trips/{tripId}/reassign:
+    post:
+      tags:
+        - Operation
+      summary: Phân công lại tài xế
+      description: |
+        Operation Staff có thể phân công lại tài xế cho chuyến xe
+        khi tài xế hiện tại từ chối, không thể thực hiện chuyến hoặc
+        cần thay đổi tài xế.
+
+        Tài xế mới phải:
+        - Có trạng thái Available
+        - Phù hợp với loại xe yêu cầu
+        - Không có chuyến đang thực hiện
+
+        Một chuyến xe không được đồng thời phân công cho nhiều tài xế.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID chuyến xe
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReassignDriverRequest'
+
+      responses:
+        '200':
+          description: Phân công lại thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReassignDriverResponse'
+
+        '400':
+          description: Chuyến xe hoặc tài xế không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Không có quyền phân công lại
+
+        '404':
+          description: Không tìm thấy chuyến xe hoặc tài xế
+
+
+  /operation/drivers:
+    get:
+      tags:
+        - Operation
+      summary: Xem danh sách tài xế
+      description: |
+        Operation Staff xem danh sách tài xế và trạng thái hiện tại.
+
+        Trạng thái tài xế:
+        - Available
+        - Offline
+        - Busy
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Available
+              - Offline
+              - Busy
+
+        - name: vehicleType
+          in: query
+          required: false
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Lấy danh sách tài xế thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationDriverListResponse'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Không có quyền truy cập
+
+
+  /operation/history:
+    get:
+      tags:
+        - Operation
+      summary: Tra cứu lịch sử chuyến xe
+      description: |
+        Operation Staff tra cứu lịch sử chuyến xe và trạng thái thanh toán.
+
+        Có thể tìm kiếm theo:
+        - Khoảng thời gian
+        - Trạng thái chuyến
+        - Tài xế
+        - Customer
+        - Trip ID
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: tripId
+          in: query
+          required: false
+          schema:
+            type: string
+
+        - name: customerId
+          in: query
+          required: false
+          schema:
+            type: string
+
+        - name: driverId
+          in: query
+          required: false
+          schema:
+            type: string
+
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+
+        - name: paymentStatus
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Unpaid
+              - Processing
+              - Paid
+              - Failed
+
+        - name: fromDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+
+        - name: toDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+
+      responses:
+        '200':
+          description: Tra cứu lịch sử thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Không có quyền truy cập
+
+
+  /operation/payments:
+    get:
+      tags:
+        - Operation
+      summary: Tra cứu thanh toán
+      description: |
+        Operation Staff tra cứu thông tin thanh toán của các chuyến xe.
+
+        Chỉ lưu và hiển thị thông tin cần thiết:
+        - Payment ID
+        - Trip ID
+        - Số tiền
+        - Phương thức
+        - Trạng thái
+        - Thời gian thanh toán
+
+        Không lưu thông tin thẻ hoặc dữ liệu thanh toán nhạy cảm.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: tripId
+          in: query
+          required: false
+          schema:
+            type: string
+
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Unpaid
+              - Processing
+              - Paid
+              - Failed
+
+        - name: method
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Cash
+              - Electronic
+
+        - name: fromDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+
+        - name: toDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+
+      responses:
+        '200':
+          description: Tra cứu thanh toán thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OperationPayment'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Không có quyền truy cập
+
+
+  /reports/summary:
+    get:
+      tags:
+        - Management Report
+      summary: Xem báo cáo tổng quan
+      description: |
+        Management xem các chỉ số hoạt động cơ bản của hệ thống.
+
+        Các chỉ số gồm:
+        - Tổng số chuyến
+        - Số chuyến hoàn thành
+        - Số chuyến hủy
+        - Số chuyến không tìm được tài xế
+        - Doanh thu
+
+        Doanh thu chỉ được tính từ các Payment có trạng thái Paid.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+
+        - name: toDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+
+      responses:
+        '200':
+          description: Lấy báo cáo thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryReport'
+
+        '400':
+          description: Khoảng thời gian không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Chỉ Management được xem báo cáo
+
+
+  /reports/trips:
+    get:
+      tags:
+        - Management Report
+      summary: Báo cáo chuyến xe theo trạng thái
+      description: |
+        Management xem số lượng chuyến xe theo từng trạng thái
+        trong khoảng thời gian được chọn.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+
+        - name: toDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+
+      responses:
+        '200':
+          description: Lấy báo cáo chuyến xe thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripStatusReport'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Chỉ Management được xem báo cáo
+
+
+components:
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+  schemas:
+
+    OperationTrip:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+
+        customerId:
+          type: string
+          example: CUS001
+
+        driverId:
+          type: string
+          nullable: true
+          example: DRV001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        pickup:
+          type: string
+          example: Đại học Công nghiệp TP.HCM
+
+        destination:
+          type: string
+          example: Sân bay Tân Sơn Nhất
+
+        status:
+          type: string
+          enum:
+            - Pending
+            - Searching Driver
+            - Driver Assigned
+            - Driver Accepted
+            - Arriving
+            - Picked Up
+            - In Progress
+            - Completed
+            - Cancelled
+            - Failed
+          example: In Progress
+
+        fare:
+          type: number
+          format: double
+          nullable: true
+          example: 85000
+
+        paymentStatus:
+          type: string
+          enum:
+            - Unpaid
+            - Processing
+            - Paid
+            - Failed
+          example: Paid
+
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T08:00:00Z"
+
+
+    OperationTripListResponse:
+      type: object
+      properties:
+        trips:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationTrip'
+
+        total:
+          type: integer
+          example: 25
+
+
+    OperationTripDetail:
+      allOf:
+        - $ref: '#/components/schemas/OperationTrip'
+        - type: object
+          properties:
+            driverName:
+              type: string
+              nullable: true
+              example: Nguyễn Văn A
+
+            driverPhone:
+              type: string
+              nullable: true
+              example: "0901234567"
+
+            licensePlate:
+              type: string
+              nullable: true
+              example: 51A-12345
+
+
+    ReassignDriverRequest:
+      type: object
+      required:
+        - newDriverId
+        - reason
+      properties:
+        newDriverId:
+          type: string
+          example: DRV002
+
+        reason:
+          type: string
+          example: Tài xế cũ không thể thực hiện chuyến
+
+
+    ReassignDriverResponse:
+      type: object
+      properties:
+        tripId:
+          type: string
+          example: TRIP001
+
+        newDriverId:
+          type: string
+          example: DRV002
+
+        status:
+          type: string
+          example: Driver Assigned
+
+        message:
+          type: string
+          example: Phân công lại tài xế thành công
+
+
+    OperationDriver:
+      type: object
+      properties:
+        driverId:
+          type: string
+          example: DRV001
+
+        name:
+          type: string
+          example: Nguyễn Văn A
+
+        phone:
+          type: string
+          example: "0901234567"
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: 51A-12345
+
+        status:
+          type: string
+          enum:
+            - Available
+            - Offline
+            - Busy
+          example: Available
+
+
+    OperationDriverListResponse:
+      type: object
+      properties:
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationDriver'
+
+        total:
+          type: integer
+          example: 15
+
+
+    HistoryResponse:
+      type: object
+      properties:
+        trips:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationTrip'
+
+        total:
+          type: integer
+          example: 100
+
+
+    OperationPayment:
+      type: object
+      properties:
+        paymentId:
+          type: string
+          example: PAY001
+
+        tripId:
+          type: string
+          example: TRIP001
+
+        amount:
+          type: number
+          format: double
+          example: 85000
+
+        method:
+          type: string
+          enum:
+            - Cash
+            - Electronic
+          example: Cash
+
+        status:
+          type: string
+          enum:
+            - Unpaid
+            - Processing
+            - Paid
+            - Failed
+          example: Paid
+
+        transactionId:
+          type: string
+          nullable: true
+          example: SIM-TXN-001
+
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-09-13T09:30:00Z"
+
+
+    SummaryReport:
+      type: object
+      properties:
+        fromDate:
+          type: string
+          format: date
+          example: "2026-09-01"
+
+        toDate:
+          type: string
+          format: date
+          example: "2026-09-13"
+
+        totalTrips:
+          type: integer
+          example: 150
+
+        completedTrips:
+          type: integer
+          example: 120
+
+        cancelledTrips:
+          type: integer
+          example: 20
+
+        noDriverTrips:
+          type: integer
+          example: 10
+
+        revenue:
+          type: number
+          format: double
+          example: 10500000
+
+        revenueSource:
+          type: string
+          example: Payment records with status Paid
+
+
+    TripStatusReport:
+      type: object
+      properties:
+        fromDate:
+          type: string
+          format: date
+
+        toDate:
+          type: string
+          format: date
+
+        statusCounts:
+          type: object
+          properties:
+            Pending:
+              type: integer
+              example: 5
+            SearchingDriver:
+              type: integer
+              example: 10
+            DriverAssigned:
+              type: integer
+              example: 8
+            InProgress:
+              type: integer
+              example: 12
+            Completed:
+              type: integer
+              example: 100
+            Cancelled:
+              type: integer
+              example: 10
+            Failed:
+              type: integer
+              example: 5
