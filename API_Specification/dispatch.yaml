@@ -1,0 +1,577 @@
+paths:
+
+  /dispatch/drivers/available:
+    get:
+      tags:
+        - Dispatch
+      summary: Tìm Driver phù hợp
+      description: |
+        Operation Staff tìm các Driver phù hợp với yêu cầu của Trip.
+
+        Điều kiện Driver phù hợp:
+        - Driver đang ở trạng thái Available.
+        - Loại xe phù hợp với yêu cầu của Customer.
+        - Driver không có Trip đang thực hiện.
+        - Có thể sử dụng vị trí đã lưu của Driver nếu có.
+
+        MVP không sử dụng GPS thời gian thực, Google Maps,
+        bản đồ hoặc thuật toán AI/ML.
+      operationId: findAvailableDrivers
+
+      parameters:
+
+        - name: tripId
+          in: query
+          required: true
+          description: ID của Trip cần tìm Driver
+          schema:
+            type: integer
+          example: 6001
+
+        - name: vehicleType
+          in: query
+          required: true
+          description: Loại xe Customer yêu cầu
+          schema:
+            type: string
+          example: Sedan
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Tìm Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableDriverListResponse'
+
+        '400':
+          description: Thông tin Trip hoặc loại xe không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Chỉ Operation Staff được phép thực hiện
+
+        '404':
+          description: Không tìm thấy Trip
+
+
+  /dispatch/trips/{tripId}/assign:
+    post:
+      tags:
+        - Dispatch
+      summary: Gửi yêu cầu và phân công Driver
+      description: |
+        Operation Staff chọn một Driver phù hợp và gửi yêu cầu nhận Trip.
+
+        Driver phải xác nhận Accept trước khi việc phân công
+        được xác nhận chính thức.
+
+        Một Trip không được xác nhận đồng thời cho nhiều Driver.
+      operationId: assignDriver
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignDriverRequest'
+
+      responses:
+
+        '200':
+          description: Đã gửi yêu cầu đến Driver
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverAssignmentResponse'
+
+        '400':
+          description: Trip không ở trạng thái cho phép phân công
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Chỉ Operation Staff được phép phân công
+
+        '404':
+          description: Không tìm thấy Trip hoặc Driver
+
+        '409':
+          description: Trip đã được phân công cho Driver khác
+
+
+  /dispatch/trips/{tripId}/assignment:
+    get:
+      tags:
+        - Dispatch
+      summary: Xem thông tin phân công Driver
+      description: |
+        Xem Driver đang được yêu cầu hoặc đã được phân công
+        cho Trip.
+      operationId: getTripAssignment
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Lấy thông tin phân công thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverAssignmentResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem thông tin phân công
+
+        '404':
+          description: Không tìm thấy Trip
+
+
+  /dispatch/trips/{tripId}/reject:
+    post:
+      tags:
+        - Dispatch
+      summary: Driver từ chối yêu cầu
+      description: |
+        Driver từ chối yêu cầu nhận Trip.
+
+        Sau khi Driver Reject:
+        - Yêu cầu phân công hiện tại được ghi nhận là Rejected.
+        - Trip quay lại trạng thái Searching Driver.
+        - Operation Staff có thể chọn Driver khác.
+        - Customer không cần tạo lại Booking.
+      operationId: rejectDriverAssignment
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectAssignmentRequest'
+
+      responses:
+
+        '200':
+          description: Driver đã từ chối yêu cầu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RejectAssignmentResponse'
+
+        '400':
+          description: Yêu cầu phân công không còn hiệu lực
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Driver không được phép từ chối Trip không được phân công cho mình
+
+        '404':
+          description: Không tìm thấy Trip hoặc yêu cầu phân công
+
+
+  /dispatch/trips/{tripId}/accept:
+    post:
+      tags:
+        - Dispatch
+      summary: Driver chấp nhận yêu cầu
+      description: |
+        Driver chấp nhận yêu cầu nhận Trip.
+
+        Khi Driver Accept:
+        - Assignment chuyển sang Accepted.
+        - Trip chuyển sang Driver Assigned hoặc Driver Accepted
+          theo trạng thái hiện tại của hệ thống.
+        - Driver được xác nhận là Driver của Trip.
+        - Không Driver khác có thể nhận Trip này.
+      operationId: acceptDriverAssignment
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Driver đã chấp nhận Trip
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptAssignmentResponse'
+
+        '400':
+          description: Trip không ở trạng thái cho phép Accept
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Driver không được phép Accept Trip này
+
+        '404':
+          description: Không tìm thấy Trip hoặc yêu cầu phân công
+
+        '409':
+          description: Trip đã được Driver khác xác nhận
+
+
+  /dispatch/trips/{tripId}/no-driver:
+    post:
+      tags:
+        - Dispatch
+      summary: Xử lý trường hợp không có Driver
+      description: |
+        Ghi nhận trường hợp hệ thống không tìm được Driver phù hợp.
+
+        Operation Staff có thể ghi nhận kết quả xử lý.
+        Customer được thông báo rằng hiện chưa có Driver phù hợp.
+
+        Customer không cần tạo lại Booking sau lần tìm kiếm đầu tiên.
+      operationId: handleNoDriver
+
+      parameters:
+
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoDriverRequest'
+
+      responses:
+
+        '200':
+          description: Ghi nhận trường hợp không có Driver
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoDriverResponse'
+
+        '400':
+          description: Trip không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Chỉ Operation Staff được phép xử lý
+
+        '404':
+          description: Không tìm thấy Trip
+
+
+components:
+
+  schemas:
+
+    AvailableDriver:
+      type: object
+      properties:
+
+        driverId:
+          type: integer
+          example: 2001
+
+        fullName:
+          type: string
+          example: Trần Văn B
+
+        phone:
+          type: string
+          example: "0909876543"
+
+        status:
+          type: string
+          enum:
+            - Available
+            - Offline
+            - Busy
+          example: Available
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: "51A-123.45"
+
+        storedLocation:
+          type: string
+          nullable: true
+          example: Quận 1, TP.HCM
+
+
+    AvailableDriverListResponse:
+      type: object
+      properties:
+
+        tripId:
+          type: integer
+          example: 6001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        total:
+          type: integer
+          example: 3
+
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableDriver'
+
+
+    AssignDriverRequest:
+      type: object
+      required:
+        - driverId
+
+      properties:
+
+        driverId:
+          type: integer
+          example: 2001
+
+        note:
+          type: string
+          nullable: true
+          example: Driver gần điểm đón
+
+
+    DriverAssignmentResponse:
+      type: object
+      properties:
+
+        assignmentId:
+          type: integer
+          example: 7001
+
+        tripId:
+          type: integer
+          example: 6001
+
+        driverId:
+          type: integer
+          example: 2001
+
+        assignmentStatus:
+          type: string
+          enum:
+            - Pending
+            - Accepted
+            - Rejected
+            - Cancelled
+          example: Pending
+
+        requestedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T10:35:00Z"
+
+
+    RejectAssignmentRequest:
+      type: object
+      required:
+        - reason
+
+      properties:
+
+        reason:
+          type: string
+          example: Driver không thể nhận chuyến
+
+
+    RejectAssignmentResponse:
+      type: object
+      properties:
+
+        tripId:
+          type: integer
+          example: 6001
+
+        assignmentStatus:
+          type: string
+          enum:
+            - Rejected
+          example: Rejected
+
+        tripStatus:
+          type: string
+          enum:
+            - Searching Driver
+          example: Searching Driver
+
+        reason:
+          type: string
+          example: Driver không thể nhận chuyến
+
+        nextAction:
+          type: string
+          example: Operation Staff có thể chọn Driver khác
+
+
+    AcceptAssignmentResponse:
+      type: object
+      properties:
+
+        assignmentId:
+          type: integer
+          example: 7001
+
+        tripId:
+          type: integer
+          example: 6001
+
+        driverId:
+          type: integer
+          example: 2001
+
+        assignmentStatus:
+          type: string
+          enum:
+            - Accepted
+          example: Accepted
+
+        tripStatus:
+          type: string
+          enum:
+            - Driver Accepted
+          example: Driver Accepted
+
+        acceptedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T10:40:00Z"
+
+
+    NoDriverRequest:
+      type: object
+      required:
+        - reason
+
+      properties:
+
+        reason:
+          type: string
+          example: Không có Driver Available phù hợp với loại xe Sedan
+
+        action:
+          type: string
+          enum:
+            - WAIT
+            - RETRY_LATER
+            - MANUAL_PROCESSING
+          example: RETRY_LATER
+
+
+    NoDriverResponse:
+      type: object
+      properties:
+
+        tripId:
+          type: integer
+          example: 6001
+
+        tripStatus:
+          type: string
+          enum:
+            - Searching Driver
+            - Failed
+          example: Searching Driver
+
+        result:
+          type: string
+          example: No suitable driver found
+
+        reason:
+          type: string
+          example: Không có Driver Available phù hợp
+
+        customerNotified:
+          type: boolean
+          example: true
+
+        processedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T10:45:00Z"
+
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
