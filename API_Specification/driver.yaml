@@ -1,0 +1,586 @@
+paths:
+
+  /drivers/{driverId}/status:
+    get:
+      tags:
+        - Driver
+      summary: Xem trạng thái Driver
+      description: |
+        Lấy trạng thái hiện tại của Driver.
+        Driver có ba trạng thái:
+        Available, Offline và Busy.
+      operationId: getDriverStatus
+
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          description: ID của Driver
+          schema:
+            type: integer
+          example: 2001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy trạng thái Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverStatusResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem trạng thái Driver
+
+        '404':
+          description: Không tìm thấy Driver
+
+
+    put:
+      tags:
+        - Driver
+      summary: Cập nhật trạng thái Driver
+      description: |
+        Driver cập nhật trạng thái hoạt động của mình.
+        Driver chỉ có thể nhận chuyến khi ở trạng thái Available.
+        Driver đang thực hiện chuyến phải ở trạng thái Busy.
+      operationId: updateDriverStatus
+
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          description: ID của Driver
+          schema:
+            type: integer
+          example: 2001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDriverStatusRequest'
+
+      responses:
+        '200':
+          description: Cập nhật trạng thái Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverStatusResponse'
+
+        '400':
+          description: Trạng thái không hợp lệ hoặc không thể chuyển trạng thái
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền cập nhật trạng thái Driver
+
+        '404':
+          description: Không tìm thấy Driver
+
+
+  /drivers:
+    get:
+      tags:
+        - Driver
+      summary: Danh sách Driver
+      description: |
+        Operation Staff xem danh sách Driver và trạng thái hoạt động.
+        Có thể lọc Driver theo trạng thái.
+      operationId: getDrivers
+
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Lọc theo trạng thái Driver
+          schema:
+            type: string
+            enum:
+              - Available
+              - Offline
+              - Busy
+          example: Available
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy danh sách Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverListResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Chỉ Operation Staff hoặc Administrator được phép truy cập
+
+
+    post:
+      tags:
+        - Driver
+      summary: Thêm Driver
+      description: |
+        Operation Staff tạo thông tin Driver mới.
+        Driver mới được tạo mặc định ở trạng thái Offline.
+      operationId: createDriver
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDriverRequest'
+
+      responses:
+        '201':
+          description: Tạo Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResponse'
+
+        '400':
+          description: Dữ liệu Driver không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền tạo Driver
+
+        '409':
+          description: Email hoặc số điện thoại đã tồn tại
+
+
+  /drivers/{driverId}:
+    put:
+      tags:
+        - Driver
+      summary: Cập nhật thông tin Driver
+      description: |
+        Operation Staff cập nhật thông tin Driver,
+        trạng thái tài khoản và thông tin phương tiện.
+      operationId: updateDriver
+
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          description: ID của Driver
+          schema:
+            type: integer
+          example: 2001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDriverRequest'
+
+      responses:
+        '200':
+          description: Cập nhật Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResponse'
+
+        '400':
+          description: Dữ liệu cập nhật không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền cập nhật Driver
+
+        '404':
+          description: Không tìm thấy Driver
+
+
+  /vehicles:
+    get:
+      tags:
+        - Vehicle
+      summary: Danh sách phương tiện
+      description: Operation Staff xem danh sách phương tiện.
+      operationId: getVehicles
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy danh sách phương tiện thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleListResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem danh sách phương tiện
+
+
+    post:
+      tags:
+        - Vehicle
+      summary: Thêm phương tiện
+      description: Operation Staff thêm phương tiện cho Driver.
+      operationId: createVehicle
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVehicleRequest'
+
+      responses:
+        '201':
+          description: Thêm phương tiện thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+
+        '400':
+          description: Dữ liệu phương tiện không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền thêm phương tiện
+
+        '409':
+          description: Biển số xe đã tồn tại
+
+
+  /vehicles/{vehicleId}:
+    put:
+      tags:
+        - Vehicle
+      summary: Cập nhật phương tiện
+      description: |
+        Operation Staff cập nhật loại xe, biển số
+        và trạng thái hoạt động của phương tiện.
+      operationId: updateVehicle
+
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          description: ID của phương tiện
+          schema:
+            type: integer
+          example: 3001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVehicleRequest'
+
+      responses:
+        '200':
+          description: Cập nhật phương tiện thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleResponse'
+
+        '400':
+          description: Dữ liệu phương tiện không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền cập nhật phương tiện
+
+        '404':
+          description: Không tìm thấy phương tiện
+
+
+components:
+
+  schemas:
+
+    DriverStatusResponse:
+      type: object
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+
+        status:
+          type: string
+          enum:
+            - Available
+            - Offline
+            - Busy
+          example: Available
+
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T10:30:00Z"
+
+
+    UpdateDriverStatusRequest:
+      type: object
+      required:
+        - status
+
+      properties:
+        status:
+          type: string
+          enum:
+            - Available
+            - Offline
+            - Busy
+          example: Available
+
+
+    CreateDriverRequest:
+      type: object
+      required:
+        - fullName
+        - phone
+        - email
+
+      properties:
+        fullName:
+          type: string
+          example: Trần Văn B
+
+        phone:
+          type: string
+          example: "0909876543"
+
+        email:
+          type: string
+          format: email
+          example: tranvanb@gmail.com
+
+        vehicleId:
+          type: integer
+          nullable: true
+          example: 3001
+
+
+    UpdateDriverRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          example: Trần Văn C
+
+        phone:
+          type: string
+          example: "0909123456"
+
+        email:
+          type: string
+          format: email
+          example: tranvanc@gmail.com
+
+        accountStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - BLOCKED
+          example: ACTIVE
+
+        vehicleId:
+          type: integer
+          nullable: true
+          example: 3001
+
+
+    DriverResponse:
+      type: object
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+
+        fullName:
+          type: string
+          example: Trần Văn B
+
+        phone:
+          type: string
+          example: "0909876543"
+
+        email:
+          type: string
+          format: email
+          example: tranvanb@gmail.com
+
+        status:
+          type: string
+          enum:
+            - Available
+            - Offline
+            - Busy
+          example: Offline
+
+        accountStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - BLOCKED
+          example: ACTIVE
+
+        vehicle:
+          $ref: '#/components/schemas/VehicleInfo'
+
+
+    DriverListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 10
+
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverResponse'
+
+
+    CreateVehicleRequest:
+      type: object
+      required:
+        - driverId
+        - vehicleType
+        - licensePlate
+
+      properties:
+        driverId:
+          type: integer
+          example: 2001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: "51A-123.45"
+
+
+    UpdateVehicleRequest:
+      type: object
+      properties:
+        vehicleType:
+          type: string
+          example: SUV
+
+        licensePlate:
+          type: string
+          example: "51A-678.90"
+
+        active:
+          type: boolean
+          example: true
+
+
+    VehicleInfo:
+      type: object
+      properties:
+        vehicleId:
+          type: integer
+          example: 3001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: "51A-123.45"
+
+        active:
+          type: boolean
+          example: true
+
+
+    VehicleResponse:
+      type: object
+      properties:
+        vehicleId:
+          type: integer
+          example: 3001
+
+        driverId:
+          type: integer
+          example: 2001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: "51A-123.45"
+
+        active:
+          type: boolean
+          example: true
+
+
+    VehicleListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 5
+
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleResponse'
+
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
