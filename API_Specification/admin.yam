@@ -1,0 +1,391 @@
+paths:
+
+  /admin/users:
+    get:
+      tags:
+        - Administration
+      summary: Xem danh sách người dùng
+      description: |
+        Administrator xem danh sách tài khoản trong hệ thống.
+
+        Có thể lọc theo:
+        - Role
+        - Trạng thái tài khoản
+        - Từ khóa tên, email hoặc số điện thoại
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: role
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Customer
+              - Driver
+              - Operation Staff
+              - Administrator
+              - Management
+
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Active
+              - Blocked
+
+        - name: keyword
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Tìm kiếm theo tên, email hoặc số điện thoại
+
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+
+      responses:
+        '200':
+          description: Lấy danh sách người dùng thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Chỉ Administrator được thực hiện chức năng này
+
+
+  /admin/users/{userId}:
+    get:
+      tags:
+        - Administration
+      summary: Xem thông tin người dùng
+      description: |
+        Administrator xem thông tin tài khoản và role của người dùng.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID người dùng
+
+      responses:
+        '200':
+          description: Lấy thông tin người dùng thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Không có quyền truy cập
+
+        '404':
+          description: Không tìm thấy người dùng
+
+
+  /admin/users/{userId}/status:
+    patch:
+      tags:
+        - Administration
+      summary: Cập nhật trạng thái tài khoản
+      description: |
+        Administrator kích hoạt hoặc khóa tài khoản người dùng.
+
+        Tài khoản Blocked không được phép đăng nhập hệ thống.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID người dùng
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserStatusRequest'
+
+      responses:
+        '200':
+          description: Cập nhật trạng thái tài khoản thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+
+        '400':
+          description: Trạng thái tài khoản không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Chỉ Administrator được thay đổi trạng thái tài khoản
+
+        '404':
+          description: Không tìm thấy người dùng
+
+
+  /admin/users/{userId}/role:
+    patch:
+      tags:
+        - Administration
+      summary: Cập nhật role người dùng
+      description: |
+        Administrator cập nhật role của tài khoản.
+
+        Các role được hỗ trợ:
+        - Customer
+        - Driver
+        - Operation Staff
+        - Administrator
+        - Management
+
+        Role quyết định các chức năng mà tài khoản được phép truy cập.
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID người dùng
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRoleRequest'
+
+      responses:
+        '200':
+          description: Cập nhật role thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+
+        '400':
+          description: Role không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Chỉ Administrator được thay đổi role
+
+        '404':
+          description: Không tìm thấy người dùng
+
+
+  /admin/roles:
+    get:
+      tags:
+        - Administration
+      summary: Xem danh sách role
+      description: |
+        Administrator xem các role được cấu hình trong hệ thống
+        và quyền truy cập cơ bản của từng role.
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy danh sách role thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleListResponse'
+
+        '401':
+          description: Chưa đăng nhập
+
+        '403':
+          description: Chỉ Administrator được xem danh sách role
+
+
+components:
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+  schemas:
+
+    AdminUser:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: US001
+
+        name:
+          type: string
+          example: Nguyễn Văn A
+
+        email:
+          type: string
+          format: email
+          example: user@example.com
+
+        phone:
+          type: string
+          example: "0901234567"
+
+        role:
+          type: string
+          enum:
+            - Customer
+            - Driver
+            - Operation Staff
+            - Administrator
+            - Management
+          example: Customer
+
+        status:
+          type: string
+          enum:
+            - Active
+            - Blocked
+          example: Active
+
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T08:00:00Z"
+
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T10:00:00Z"
+
+
+    UserListResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminUser'
+
+        total:
+          type: integer
+          example: 50
+
+        page:
+          type: integer
+          example: 1
+
+        limit:
+          type: integer
+          example: 20
+
+
+    UpdateUserStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - Active
+            - Blocked
+          example: Blocked
+
+        reason:
+          type: string
+          example: Tài khoản vi phạm quy định hệ thống
+
+
+    UpdateUserRoleRequest:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum:
+            - Customer
+            - Driver
+            - Operation Staff
+            - Administrator
+            - Management
+          example: Driver
+
+
+    Role:
+      type: object
+      properties:
+        role:
+          type: string
+          example: Operation Staff
+
+        description:
+          type: string
+          example: Quản lý và điều phối các chuyến xe
+
+        permissions:
+          type: array
+          items:
+            type: string
+          example:
+            - VIEW_TRIPS
+            - VIEW_DRIVERS
+            - ASSIGN_DRIVER
+            - REASSIGN_DRIVER
+
+
+    RoleListResponse:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
