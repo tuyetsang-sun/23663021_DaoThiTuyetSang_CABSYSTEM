@@ -1,0 +1,325 @@
+paths:
+
+  /users/{userId}:
+    get:
+      tags:
+        - User Profile
+      summary: Xem thông tin người dùng
+      description: |
+        Cho phép người dùng xem thông tin hồ sơ của mình.
+        Operation Staff có thể xem thông tin Customer hoặc Driver
+        theo quyền được cấp.
+      operationId: getUserProfile
+
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID của người dùng
+          schema:
+            type: integer
+          example: 1001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy thông tin hồ sơ thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem hồ sơ này
+
+        '404':
+          description: Không tìm thấy người dùng
+
+
+  /users/{userId}/profile:
+    put:
+      tags:
+        - User Profile
+      summary: Cập nhật thông tin hồ sơ
+      description: |
+        Customer có thể cập nhật thông tin cá nhân.
+        Driver có thể cập nhật thông tin cá nhân theo quyền.
+        Operation Staff có thể cập nhật thông tin Customer hoặc Driver.
+      operationId: updateUserProfile
+
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID của người dùng
+          schema:
+            type: integer
+          example: 1001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+
+      responses:
+        '200':
+          description: Cập nhật hồ sơ thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+
+        '400':
+          description: Dữ liệu cập nhật không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền cập nhật hồ sơ
+
+        '404':
+          description: Không tìm thấy người dùng
+
+
+  /drivers/{driverId}/profile:
+    get:
+      tags:
+        - User Profile
+      summary: Xem hồ sơ Driver
+      description: |
+        Lấy thông tin Driver bao gồm thông tin cá nhân,
+        trạng thái hoạt động và thông tin phương tiện.
+      operationId: getDriverProfile
+
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          description: ID của Driver
+          schema:
+            type: integer
+          example: 2001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        '200':
+          description: Lấy hồ sơ Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverProfileResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền truy cập
+
+        '404':
+          description: Không tìm thấy Driver
+
+
+    put:
+      tags:
+        - User Profile
+      summary: Cập nhật hồ sơ Driver
+      description: |
+        Cập nhật thông tin Driver và thông tin phương tiện
+        theo quyền được cấp.
+      operationId: updateDriverProfile
+
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          description: ID của Driver
+          schema:
+            type: integer
+          example: 2001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDriverProfileRequest'
+
+      responses:
+        '200':
+          description: Cập nhật hồ sơ Driver thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverProfileResponse'
+
+        '400':
+          description: Dữ liệu cập nhật không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền cập nhật Driver
+
+        '404':
+          description: Không tìm thấy Driver
+
+
+components:
+
+  schemas:
+
+    UserProfileResponse:
+      type: object
+      properties:
+
+        userId:
+          type: integer
+          example: 1001
+
+        fullName:
+          type: string
+          example: Nguyễn Văn A
+
+        phone:
+          type: string
+          example: "0901234567"
+
+        email:
+          type: string
+          format: email
+          example: nguyenvana@gmail.com
+
+        role:
+          type: string
+          enum:
+            - CUSTOMER
+            - DRIVER
+            - OPERATION_STAFF
+            - ADMINISTRATOR
+            - MANAGEMENT
+          example: CUSTOMER
+
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - BLOCKED
+          example: ACTIVE
+
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+
+        fullName:
+          type: string
+          example: Nguyễn Văn B
+
+        phone:
+          type: string
+          example: "0912345678"
+
+        email:
+          type: string
+          format: email
+          example: nguyenvanb@gmail.com
+
+
+    DriverProfileResponse:
+      type: object
+      properties:
+
+        driverId:
+          type: integer
+          example: 2001
+
+        fullName:
+          type: string
+          example: Trần Văn B
+
+        phone:
+          type: string
+          example: "0909876543"
+
+        email:
+          type: string
+          format: email
+          example: tranvanb@gmail.com
+
+        status:
+          type: string
+          enum:
+            - Available
+            - Offline
+            - Busy
+          example: Available
+
+        vehicle:
+          $ref: '#/components/schemas/VehicleInfo'
+
+
+    UpdateDriverProfileRequest:
+      type: object
+      properties:
+
+        fullName:
+          type: string
+          example: Trần Văn C
+
+        phone:
+          type: string
+          example: "0909123456"
+
+        email:
+          type: string
+          format: email
+          example: tranvanc@gmail.com
+
+        vehicle:
+          $ref: '#/components/schemas/VehicleInfo'
+
+
+    VehicleInfo:
+      type: object
+      properties:
+
+        vehicleId:
+          type: integer
+          example: 3001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        licensePlate:
+          type: string
+          example: "51A-123.45"
+
+        active:
+          type: boolean
+          example: true
+
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
