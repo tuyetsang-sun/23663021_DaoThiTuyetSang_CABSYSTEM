@@ -1,3 +1,14 @@
+openapi: 3.0.3
+
+info:
+  title: CAB System API
+  description: API Authentication cho hệ thống CAB System
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local Server
+
 paths:
 
   /dispatch/drivers/available:
@@ -19,14 +30,13 @@ paths:
       operationId: findAvailableDrivers
 
       parameters:
-
         - name: tripId
           in: query
           required: true
           description: ID của Trip cần tìm Driver
           schema:
             type: integer
-          example: 6001
+            example: 6001
 
         - name: vehicleType
           in: query
@@ -34,13 +44,12 @@ paths:
           description: Loại xe Customer yêu cầu
           schema:
             type: string
-          example: Sedan
+            example: Sedan
 
       security:
         - bearerAuth: []
 
       responses:
-
         '200':
           description: Tìm Driver thành công
           content:
@@ -76,14 +85,13 @@ paths:
       operationId: assignDriver
 
       parameters:
-
         - name: tripId
           in: path
           required: true
           description: ID của Trip
           schema:
             type: integer
-          example: 6001
+            example: 6001
 
       security:
         - bearerAuth: []
@@ -96,7 +104,6 @@ paths:
               $ref: '#/components/schemas/AssignDriverRequest'
 
       responses:
-
         '200':
           description: Đã gửi yêu cầu đến Driver
           content:
@@ -131,20 +138,18 @@ paths:
       operationId: getTripAssignment
 
       parameters:
-
         - name: tripId
           in: path
           required: true
           description: ID của Trip
           schema:
             type: integer
-          example: 6001
+            example: 6001
 
       security:
         - bearerAuth: []
 
       responses:
-
         '200':
           description: Lấy thông tin phân công thành công
           content:
@@ -178,14 +183,13 @@ paths:
       operationId: rejectDriverAssignment
 
       parameters:
-
         - name: tripId
           in: path
           required: true
           description: ID của Trip
           schema:
             type: integer
-          example: 6001
+            example: 6001
 
       security:
         - bearerAuth: []
@@ -198,7 +202,6 @@ paths:
               $ref: '#/components/schemas/RejectAssignmentRequest'
 
       responses:
-
         '200':
           description: Driver đã từ chối yêu cầu
           content:
@@ -236,20 +239,18 @@ paths:
       operationId: acceptDriverAssignment
 
       parameters:
-
         - name: tripId
           in: path
           required: true
           description: ID của Trip
           schema:
             type: integer
-          example: 6001
+            example: 6001
 
       security:
         - bearerAuth: []
 
       responses:
-
         '200':
           description: Driver đã chấp nhận Trip
           content:
@@ -288,14 +289,13 @@ paths:
       operationId: handleNoDriver
 
       parameters:
-
         - name: tripId
           in: path
           required: true
           description: ID của Trip
           schema:
             type: integer
-          example: 6001
+            example: 6001
 
       security:
         - bearerAuth: []
@@ -308,7 +308,6 @@ paths:
               $ref: '#/components/schemas/NoDriverRequest'
 
       responses:
-
         '200':
           description: Ghi nhận trường hợp không có Driver
           content:
