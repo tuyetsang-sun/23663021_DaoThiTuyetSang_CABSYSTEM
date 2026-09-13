@@ -1,5 +1,15 @@
-paths:
+openapi: 3.0.3
 
+info:
+  title: CAB System API
+  description: API Authentication cho hệ thống CAB System
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local Server
+
+paths:
   /users/{userId}:
     get:
       tags:
