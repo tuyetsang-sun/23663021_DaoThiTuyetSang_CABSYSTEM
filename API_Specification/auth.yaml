@@ -1,4 +1,16 @@
-```yaml
+openapi: 3.0.3
+
+info:
+  title: CAB System API
+  description: |
+    API Specification cho hệ thống CAB System.
+    Module Authentication.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local Server
+
 paths:
 
   /auth/register:
@@ -33,15 +45,11 @@ paths:
         '409':
           description: Email hoặc số điện thoại đã tồn tại
 
-
   /auth/login:
     post:
       tags:
         - Authentication
       summary: Đăng nhập
-      description: |
-        Cho phép Customer, Driver và Operation Staff đăng nhập.
-        Hệ thống kiểm tra thông tin xác thực và xác định vai trò người dùng.
       operationId: login
 
       requestBody:
@@ -59,22 +67,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
 
+        '400':
+          description: Dữ liệu đăng nhập không hợp lệ
+
         '401':
           description: Email hoặc mật khẩu không chính xác
 
         '403':
           description: Tài khoản bị khóa hoặc không được phép đăng nhập
 
-        '400':
-          description: Dữ liệu đăng nhập không hợp lệ
-
-
   /auth/logout:
     post:
       tags:
         - Authentication
       summary: Đăng xuất
-      description: Đăng xuất người dùng hiện tại.
       operationId: logout
 
       security:
@@ -87,7 +93,6 @@ paths:
         '401':
           description: Chưa đăng nhập hoặc token không hợp lệ
 
-
 components:
 
   schemas:
@@ -99,37 +104,29 @@ components:
         - phone
         - email
         - password
-
       properties:
-
         fullName:
           type: string
           example: Nguyễn Văn A
-          description: Họ và tên Customer
 
         phone:
           type: string
           example: "0901234567"
-          description: Số điện thoại duy nhất
 
         email:
           type: string
           format: email
           example: nguyenvana@gmail.com
-          description: Email duy nhất
 
         password:
           type: string
           format: password
           minLength: 6
           example: "Password123"
-          description: Mật khẩu đăng nhập
-
 
     RegisterResponse:
       type: object
       properties:
-
         message:
           type: string
           example: Đăng ký tài khoản thành công
@@ -144,15 +141,12 @@ components:
             - CUSTOMER
           example: CUSTOMER
 
-
     LoginRequest:
       type: object
       required:
         - email
         - password
-
       properties:
-
         email:
           type: string
           format: email
@@ -163,11 +157,9 @@ components:
           format: password
           example: "Password123"
 
-
     LoginResponse:
       type: object
       properties:
-
         message:
           type: string
           example: Đăng nhập thành công
@@ -179,11 +171,9 @@ components:
         user:
           $ref: '#/components/schemas/AuthUser'
 
-
     AuthUser:
       type: object
       properties:
-
         userId:
           type: integer
           example: 1001
@@ -212,11 +202,9 @@ components:
             - BLOCKED
           example: ACTIVE
 
-
   securitySchemes:
 
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-```
