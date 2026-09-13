@@ -1,0 +1,324 @@
+paths:
+
+  /trips/{tripId}/fare:
+    post:
+      tags:
+        - Payment
+      summary: Tính cước Trip
+      description: |
+        Tính cước sau khi Trip đã hoàn thành.
+
+        Giá cước được tính dựa trên:
+        - Loại xe.
+        - Thông tin Trip.
+        - Quy tắc tính cước.
+
+        MVP sử dụng công thức tính cước đơn giản.
+        Không áp dụng dynamic pricing.
+        Không sử dụng dữ liệu GPS thời gian thực.
+      operationId: calculateFare
+
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Tính cước thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FareResponse'
+
+        '400':
+          description: Trip chưa hoàn thành hoặc dữ liệu Trip không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền tính cước
+
+        '404':
+          description: Không tìm thấy Trip
+
+
+  /trips/{tripId}/payment:
+    post:
+      tags:
+        - Payment
+      summary: Tạo thanh toán cho Trip
+      description: |
+        Tạo yêu cầu thanh toán cho Trip đã hoàn thành.
+
+        Phương thức thanh toán:
+        - Cash.
+        - Electronic mô phỏng.
+
+        MVP không kết nối payment gateway thật
+        và không lưu thông tin thẻ hoặc dữ liệu nhạy cảm.
+      operationId: createPayment
+
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: ID của Trip
+          schema:
+            type: integer
+          example: 6001
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+
+      responses:
+
+        '201':
+          description: Tạo thanh toán thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+
+        '400':
+          description: Trip chưa hoàn thành hoặc phương thức thanh toán không hợp lệ
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền thực hiện thanh toán
+
+        '404':
+          description: Không tìm thấy Trip
+
+        '409':
+          description: Trip đã được thanh toán
+
+
+  /payments/{paymentId}:
+    get:
+      tags:
+        - Payment
+      summary: Xem thông tin thanh toán
+      description: |
+        Xem thông tin Payment của một Trip,
+        bao gồm số tiền, phương thức và trạng thái thanh toán.
+      operationId: getPayment
+
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          description: ID của Payment
+          schema:
+            type: integer
+          example: 8001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Lấy thông tin thanh toán thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền xem Payment
+
+        '404':
+          description: Không tìm thấy Payment
+
+
+  /payments/{paymentId}/retry:
+    post:
+      tags:
+        - Payment
+      summary: Thử lại thanh toán
+      description: |
+        Cho phép thực hiện lại thanh toán khi Payment có trạng thái Failed.
+
+        Chỉ áp dụng cho thanh toán điện tử mô phỏng.
+        Không lưu thông tin thẻ hoặc dữ liệu thanh toán nhạy cảm.
+      operationId: retryPayment
+
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          description: ID của Payment
+          schema:
+            type: integer
+          example: 8001
+
+      security:
+        - bearerAuth: []
+
+      responses:
+
+        '200':
+          description: Thực hiện lại thanh toán
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+
+        '400':
+          description: Payment không ở trạng thái Failed
+
+        '401':
+          description: Chưa đăng nhập hoặc token không hợp lệ
+
+        '403':
+          description: Không có quyền Retry Payment
+
+        '404':
+          description: Không tìm thấy Payment
+
+
+components:
+
+  schemas:
+
+    FareResponse:
+      type: object
+      properties:
+
+        tripId:
+          type: integer
+          example: 6001
+
+        vehicleType:
+          type: string
+          example: Sedan
+
+        baseFare:
+          type: number
+          format: double
+          example: 50000
+
+        distanceFare:
+          type: number
+          format: double
+          example: 90000
+
+        totalFare:
+          type: number
+          format: double
+          example: 140000
+
+        currency:
+          type: string
+          example: VND
+
+        calculatedAt:
+          type: string
+          format: date-time
+          example: "2026-09-13T11:50:00Z"
+
+
+    CreatePaymentRequest:
+      type: object
+      required:
+        - paymentMethod
+
+      properties:
+
+        paymentMethod:
+          type: string
+          enum:
+            - CASH
+            - ELECTRONIC
+          example: CASH
+
+        amount:
+          type: number
+          format: double
+          example: 140000
+          description: |
+            Số tiền thanh toán.
+            Giá trị phải khớp với số tiền Fare của Trip.
+
+
+    PaymentResponse:
+      type: object
+      properties:
+
+        paymentId:
+          type: integer
+          example: 8001
+
+        tripId:
+          type: integer
+          example: 6001
+
+        amount:
+          type: number
+          format: double
+          example: 140000
+
+        currency:
+          type: string
+          example: VND
+
+        paymentMethod:
+          type: string
+          enum:
+            - CASH
+            - ELECTRONIC
+          example: CASH
+
+        paymentStatus:
+          type: string
+          enum:
+            - Unpaid
+            - Processing
+            - Paid
+            - Failed
+          example: Paid
+
+        transactionId:
+          type: string
+          nullable: true
+          example: SIM-20260913-8001
+
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-09-13T11:55:00Z"
+
+        message:
+          type: string
+          example: Thanh toán thành công
+
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
