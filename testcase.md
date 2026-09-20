@@ -1,0 +1,23 @@
+# 1. Chức năng Đăng nhập – Authentication
+
+| **Test Case ID** | **Test Scenario** | **Test Case** | **Preconditions** | **Test Steps** | **Test Data** | **Expected Result** | **Priority** | 
+| **TC-AUTH-001** | Người dùng đăng nhập | Đăng nhập với username và password hợp lệ | Tài khoản đã đăng ký và Active | 1\. Mở Login  2\. Nhập username  3\. Nhập password  4\. Nhấn Login | Username: `user01`  Password: `Password@123` | Đăng nhập thành công; tạo token/session và chuyển vào hệ thống | High | 
+| **TC-AUTH-002** | Người dùng đăng nhập | Đăng nhập bằng Customer hợp lệ | Customer đã đăng ký | 1\. Nhập thông tin  2\. Nhấn Login | Username: `customer01`  Password: `Customer@123` | Đăng nhập thành công với role Customer | High | 
+| **TC-AUTH-003** | Người dùng đăng nhập | Đăng nhập bằng Driver hợp lệ | Driver tồn tại và Active | 1\. Mở Login  2\. Nhập username  3\. Nhập password  4\. Login | Username: `driver01`  Password: `Driver@123` | Đăng nhập thành công với role Driver | High | 
+| **TC-AUTH-004** | Người dùng đăng nhập | Đăng nhập bằng Admin hợp lệ | Admin tồn tại và Active | 1\. Nhập thông tin  2\. Login | Username: `admin01`  Password: `Admin@123` | Đăng nhập thành công với quyền Administrator | High | 
+| **TC-AUTH-005** | Người dùng đăng nhập | Username không tồn tại | Hệ thống hoạt động | 1\. Mở Login  2\. Nhập username  3\. Nhập password  4\. Login | Username: `unknown01`  Password: `Password@123` | Đăng nhập thất bại; không tạo token | High | 
+| **TC-AUTH-006** | Người dùng đăng nhập | Password không đúng | Username tồn tại và Active | 1\. Nhập username đúng  2\. Nhập password sai  3\. Login | Username: `user01`  Password: `Wrong@123` | Đăng nhập thất bại | High | 
+| **TC-AUTH-007** | Người dùng đăng nhập | Tài khoản bị khóa | Account user01 Locked | 1\. Nhập username  2\. Nhập password đúng  3\. Login | Username: `user01`  Password: `Password@123` | Không cho đăng nhập; thông báo tài khoản bị khóa | High | 
+| **TC-AUTH-008** | Người dùng đăng nhập | Tài khoản Inactive | Account Inactive | 1\. Nhập thông tin  2\. Login | Username: `user02`  Password: `Password@123` | Không tạo session/token | High | 
+| **TC-AUTH-009** | Người dùng đăng nhập | Username đạt độ dài tối thiểu | Rule username đã định nghĩa | 1\. Nhập username ở giới hạn min  2\. Nhập password  3\. Login | Username: `u01` | Hệ thống xử lý đúng theo giới hạn username | Medium | 
+| **TC-AUTH-010** | Người dùng đăng nhập | Username đạt độ dài tối đa | Rule username đã định nghĩa | 1\. Nhập username max length  2\. Login | Username: `[chuỗi đúng max length]` | Hệ thống chấp nhận nếu không vượt giới hạn | Medium | 
+| **TC-AUTH-011** | Người dùng đăng nhập | Password đạt độ dài tối thiểu | Password min = 8 | 1\. Nhập password 8 ký tự  2\. Login | Password: `Abc@1234` | Hệ thống xử lý password đúng giới hạn | Medium | 
+| **TC-AUTH-012** | Người dùng đăng nhập | Password đạt độ dài tối đa | Password có giới hạn max | 1\. Nhập password max length  2\. Login | Password: `[chuỗi max length]` | Hệ thống xử lý đúng giới hạn | Medium | 
+| **TC-AUTH-013** | Người dùng đăng nhập | Username để trống | Đang ở Login | 1\. Không nhập username  2\. Nhập password  3\. Login | Username: `""` | Không cho đăng nhập; báo username bắt buộc | High | 
+| **TC-AUTH-014** | Người dùng đăng nhập | Password để trống | Đang ở Login | 1\. Nhập username  2\. Không nhập password  3\. Login | Password: `""` | Không cho đăng nhập; báo password bắt buộc | High | 
+| **TC-AUTH-015** | Người dùng đăng nhập | Username và password đều trống | Đang ở Login | 1\. Không nhập dữ liệu  2\. Login | Username: `""`  Password: `""` | Hiển thị lỗi validation cho cả hai trường | High | 
+| **TC-AUTH-016** | Người dùng đăng nhập | Gửi request thiếu field username | API hoạt động | 1\. Gửi request login  2\. Không truyền username | `{ "password": "Password@123" }` | API trả lỗi validation; không xác thực | High | 
+| **TC-AUTH-017** | Người dùng đăng nhập | Username chứa ký tự đặc biệt không hợp lệ | API hoạt động | 1\. Nhập username sai format  2\. Login | Username: `user@@@` | Từ chối username sai định dạng | Medium | 
+| **TC-AUTH-018** | Người dùng đăng nhập | Username chứa khoảng trắng không hợp lệ | Rule username không cho khoảng trắng | 1\. Nhập username  2\. Login | Username: `user 01` | Từ chối dữ liệu không hợp lệ | Medium | 
+| **TC-AUTH-019** | Người dùng đăng nhập | Password sai kiểu dữ liệu | API hoạt động | 1\. Gửi request  2\. Truyền password dạng số/object | `{ "password": 123456 }` | API từ chối nếu password yêu cầu String | Medium | 
+| **TC-AUTH-020** | Người dùng đăng nhập | Username truyền dạng số | API hoạt động | 1\. Gửi request  2\. Username không phải String | `{ "username": 12345 }` | API trả lỗi sai kiểu dữ liệu | Medium | 
